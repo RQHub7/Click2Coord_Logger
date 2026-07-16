@@ -17,7 +17,7 @@ npm run dev
 ```
 
 ## Tech Stack
-**Languages:** JavaScript, HTML, CSS
-**Frameworks/Libraries:** react, leaflet, react-leaflet, react-dom
-**Build tool:** Vite
+**Languages:** JavaScript, HTML, CSS  
+**Frameworks/Libraries:** react, leaflet, react-leaflet, react-dom  
+**Build tool:** Vite  
  

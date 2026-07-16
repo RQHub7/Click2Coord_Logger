@@ -182,3 +182,9 @@
     border-right-color: var(--border);
   }
 }
+
+/* Map container styles */
+.leaflet-container {
+  width: 100%;
+  height: 100vh; /* Adjust the height as needed */
+}

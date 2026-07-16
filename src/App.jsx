@@ -5,7 +5,16 @@ import heroImg from './assets/hero.png';
 import './App.css';
 import 'leaflet/dist/leaflet.css';
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
+import L from "leaflet";
 
+function numberedIcon(number) {
+  return L.divIcon({
+    className: "numbered-pin",
+    html: `<div class="numbered-pin-inner"><span class="numbered-pin-label">${number}</span></div>`,
+    iconSize: [28, 28],
+    iconAnchor: [14, 28], // bottom-center, so it "points" at the click spot
+  });
+}
 
 function ClickToDropPin({ onPick }) {
   useMapEvents({
@@ -33,21 +42,25 @@ function App() {
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
           <ClickToDropPin onPick={addPin} />
-          {pins.map((pin) => (
-            <Marker key={pin.id} position={[pin.lat, pin.lng]} />
+          {pins.map((pin, index) => (
+            <Marker 
+              key={pin.id} 
+              position={[pin.lat, pin.lng]}
+              icon={numberedIcon(index + 1)}
+               />
           ))}
         </MapContainer>
       </div>
 
       <div style={{ width: "260px", padding: "16px", overflowY: "auto" }}>
         <h3>Pins ({pins.length})</h3>
-        <ul>
+        <ol>
           {pins.map((pin) => (
             <li key={pin.id}>
               Lat: {pin.lat.toFixed(4)}, Lng: {pin.lng.toFixed(4)}
             </li>
           ))}
-        </ul>
+        </ol>
       </div>
     </div>
     

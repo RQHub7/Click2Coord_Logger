@@ -1,11 +1,12 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import reactLogo from './assets/react.svg';
 import viteLogo from './assets/vite.svg';
 import heroImg from './assets/hero.png';
 import './App.css';
 import 'leaflet/dist/leaflet.css';
-import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
-import L from "leaflet";
+import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from 'react-leaflet';
+import L from 'leaflet';
+import { searchLocation } from './geocode';
 
 function numberedIcon(number) {
   return L.divIcon({
@@ -15,6 +16,52 @@ function numberedIcon(number) {
     iconAnchor: [14, 28], // bottom-center, so it "points" at the click spot
   });
 }
+
+function SearchBar() {
+  const [query, setQuery] = useState("");
+  const [error, setError] = useState(null);
+  const map = useMap();
+  const wrapperRef = useRef(null);
+
+  useEffect(() => {
+    if (wrapperRef.current) {
+      L.DomEvent.disableClickPropagation(wrapperRef.current);
+      L.DomEvent.disableScrollPropagation(wrapperRef.current);
+    }
+  }, []);
+
+  const handleKeyDown = async (e) => {
+    if (e.key !== "Enter") return;
+    try {
+      setError(null);
+      const result = await searchLocation(query);
+      if (!result) {
+        setError("No results found");
+        return;
+      }
+      map.flyTo([result.lat, result.lon], 13, { duration: 1.2 });
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  return (
+    <div
+      ref={wrapperRef}
+      style={{ position: "absolute", top: 10, left: 50, zIndex: 1000 }}
+    >
+      <input
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        onKeyDown={handleKeyDown}
+        placeholder="Search a location…"
+        style={{ padding: "8px", width: "220px" }}
+      />
+      {error && <div style={{ color: "red", fontSize: "12px" }}>{error}</div>}
+    </div>
+  );
+}
+
 
 function ClickToDropPin({ onPick }) {
   useMapEvents({
@@ -41,6 +88,7 @@ function App() {
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
+          <SearchBar />
           <ClickToDropPin onPick={addPin} />
           {pins.map((pin, index) => (
             <Marker 

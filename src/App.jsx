@@ -74,7 +74,7 @@ function ClickToDropPin({ onPick }) {
 
 function App() {
   const [pins, setPins] = useState([]);
-
+  const [darkMode, setDarkMode] = useState(false);
   const addPin = (lat, lng) => {
     setPins((prev) => [...prev, { lat, lng, id: Date.now() }]);
   };
@@ -85,8 +85,12 @@ function App() {
       <div style={{ flex: 1 }}>
         <MapContainer center={[38.9366, -119.9866]} zoom={11} style={{ height: "100vh", width: "100%" }}>
           <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            attribution='&copy; <a href="https://carto.com/basemaps/">Carto</a> contributors'
+            url={
+              darkMode
+                ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+                : "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+            }
           />
           <SearchBar />
           <ClickToDropPin onPick={addPin} />
@@ -101,6 +105,9 @@ function App() {
       </div>
 
       <div style={{ width: "260px", padding: "16px", overflowY: "auto" }}>
+        <button onClick={() => setDarkMode((prev) => !prev)}>
+          {darkMode ? "☀ Light mode" : "🌙 Dark mode"}
+        </button>
         <h3>Pins ({pins.length})</h3>
         <ol>
           {pins.map((pin) => (
